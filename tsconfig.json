@@ -13,7 +13,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["leaflet"]
   },
-  "include": ["src"]
+  "include": ["src", "types"],
+  "externals": {
+    "leaflet": "L"
+  }
 }

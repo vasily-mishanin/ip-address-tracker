@@ -1,3 +1,15 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 :root {
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
@@ -21,4 +33,15 @@
   button {
     background-color: #f9f9f9;
   }
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+.ip-location-app {
+  max-width: 1440px;
+  width: 100%;
+  /* flex-basis: content; */
 }

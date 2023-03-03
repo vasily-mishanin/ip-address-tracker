@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap");
+
+:root {
+  /* VARS */
+  --color-very-dark-grey: hsl(0, 0%, 17%);
+  --color-dark-grey: hsl(0, 0%, 59%);
+  --font-rubik: "Rubik", sans-serif;
+  font-family: var(--font-rubik);
+}
+
+#map {
+  height: 500px;
+}
+
+.header {
+  background: url("./images/pattern-bg-mobile.png");
+  background-repeat: repeat;
+  height: 300px;
+}
+
+.location-form {
+}

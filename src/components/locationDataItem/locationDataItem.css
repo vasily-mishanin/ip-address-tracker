@@ -1,0 +1,12 @@
+.location-data-item {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1rem;
+}
+
+.location-data-item-title {
+  text-transform: uppercase;
+}
+
+.location-data-item-value {
+}
