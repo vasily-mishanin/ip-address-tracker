@@ -5,7 +5,7 @@ import "./dataPanel.css";
 export function dataPanel(locationData: LocationData) {
   const { country, region, city, timezone } = locationData.location;
   return `<section class='data-panel'>
-  <ul>
+  <ul class='data-panel__list'>
     ${locationDataItem("ip address", locationData.ip)}
     ${locationDataItem("location", city, country, region)}
     ${locationDataItem("timezone", timezone)}

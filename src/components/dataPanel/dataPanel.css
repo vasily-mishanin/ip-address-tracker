@@ -1,4 +1,33 @@
 .data-panel {
-  padding: 1rem;
-  border: 1px solifd salmon;
+  position: absolute;
+  bottom: -100px;
+  z-index: 2;
+  /*  */
+  padding: 2rem 1rem;
+  width: 320px;
+  border-radius: 1rem;
+  background-color: white;
+}
+
+.data-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media screen and (min-width: 900px) {
+  .data-panel {
+    width: 80%;
+    min-height: 180px;
+    bottom: -90px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .data-panel__list {
+    flex-direction: row;
+    gap: 0;
+  }
 }
