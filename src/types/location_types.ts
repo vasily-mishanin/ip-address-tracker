@@ -10,4 +10,6 @@ export interface LocationData {
     lng: number;
     geonameId: number;
   };
+  code?: string;
+  message?: string;
 }

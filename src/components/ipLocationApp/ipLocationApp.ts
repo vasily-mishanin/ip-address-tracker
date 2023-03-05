@@ -1,12 +1,11 @@
-//import { renderHeader } from "../header/header";
 import "./ipLocationApp.css";
 import { LocationData } from "../../types/location_types";
 import { validateIp } from "../../utils/validation";
 import { getIpLocationData } from "../../api/api_ipfy";
-import { dataPanel } from "../dataPanel/dataPanel";
+import { dataPanel, dataPanelList } from "../dataPanel/dataPanel";
 import * as L from "leaflet";
 import MarkerIcon from "../../../src/images/icon-location.svg";
-// import ArrowIcon from "../../../src/images/icon-arrow.svg";
+import isValidDomain from "is-valid-domain";
 
 var IconMarker = L.icon({
   iconUrl: MarkerIcon,
@@ -37,11 +36,12 @@ const DEFAULT_DATA: LocationData = {
 
 export class IpLocationApp {
   ipMap: L.Map | undefined;
+  locationData: LocationData | undefined;
 
   constructor() {
     // getIpLocationData<LocationData>()
     //   .then((locationData) => {
-    //     this.renderHeader(locationData);
+    //     this.configureUI(locationData);
     //     document.querySelector(".ip-location-header")!.innerHTML +=
     //       dataPanel(locationData);
     //     this.ipMap = this.renderMap(
@@ -50,14 +50,14 @@ export class IpLocationApp {
     //     );
     //   })
     //   .catch((err) => console.log(err));
-    this.renderHeader(DEFAULT_DATA);
+    this.configureUI(DEFAULT_DATA);
     this.ipMap = this.renderMap(
       DEFAULT_DATA.location.lat,
       DEFAULT_DATA.location.lng
     );
   }
 
-  renderHeader(locationData: LocationData) {
+  configureUI(locationData: LocationData) {
     const header = document.createElement("header");
     const heading = document.createElement("h1");
     header.className = "ip-location-header";
@@ -77,7 +77,10 @@ export class IpLocationApp {
     header.innerHTML += dataPanel(locationData);
 
     const mountedForm = header.querySelector(".location-form")!;
-    mountedForm.addEventListener("submit", this.getIpLocation.bind(this));
+    mountedForm.addEventListener(
+      "submit",
+      this.getIpLocationSubmitHandler.bind(this)
+    );
 
     const appContainer = document.getElementById(
       "ipLocationApp"
@@ -106,17 +109,23 @@ export class IpLocationApp {
     return map;
   }
 
-  getIpLocation(e: Event) {
+  async getIpLocationSubmitHandler(e: Event) {
+    console.log("SUBMIT");
     e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const input = form.querySelector("#ip") as HTMLInputElement;
-    const buttonSubmit = form.querySelector("#submit") as HTMLButtonElement;
-    let enteredIp = input.value;
-    // in case incorrect inputs
+
+    const ipForm = document.querySelector(".location-form") as HTMLFormElement;
+    const input = ipForm.querySelector("#ip") as HTMLInputElement;
+    const buttonSubmit = ipForm.querySelector("#submit") as HTMLButtonElement;
+    let enteredValue = input.value;
+    // listener for case of incorrect inputs
     const inputListener = (e: Event) => {
-      enteredIp = (e.target as HTMLInputElement).value;
-      console.log("inputListener", enteredIp);
-      if (validateIp(enteredIp) || enteredIp === "") {
+      enteredValue = (e.target as HTMLInputElement).value;
+      console.log("inputListener", enteredValue);
+      if (
+        validateIp(enteredValue) ||
+        isValidDomain(enteredValue) ||
+        enteredValue === ""
+      ) {
         buttonSubmit.disabled = false;
         buttonSubmit.classList.remove("disabled-button");
         input.style.borderColor = "transparent";
@@ -126,30 +135,69 @@ export class IpLocationApp {
     input.removeEventListener("input", inputListener);
     //
 
-    if (validateIp(enteredIp) || enteredIp === "") {
-      console.log("IP - VALID");
-      getIpLocationData<LocationData>(enteredIp)
-        .then((locationData) => {
-          console.log(locationData, this);
-          document.querySelector(".data-panel")?.remove();
-          this.updateMap(locationData.location.lat, locationData.location.lng);
-          document.querySelector(".ip-location-header")!.innerHTML +=
-            dataPanel(locationData);
-        })
-        .catch((err) => console.log(err));
+    if (
+      validateIp(enteredValue) ||
+      isValidDomain(enteredValue) ||
+      enteredValue === ""
+    ) {
+      console.log("VALID", enteredValue);
+      try {
+        this.locationData = await getIpLocationData<LocationData>(enteredValue);
+        console.log(this.locationData, this);
+        this.updatePanel();
+        this.updateMap();
+      } catch (err: any) {
+        console.log("catch", err);
+        const dataPanel = document.querySelector(
+          ".data-panel"
+        ) as HTMLDivElement;
+        dataPanel.style.display = "block";
+        dataPanel.style.textAlign = "center";
+        let message = err;
+        if (err instanceof Error) {
+          message = err.message;
+        }
+        dataPanel.innerHTML = `<h3>No data for such IP/domain</h3> <p><i>${message}</i></p>`;
+      }
     } else {
-      console.log("IP - INVALID");
+      console.log("INVALID", enteredValue);
       input.style.borderColor = "salmon";
       buttonSubmit.disabled = true;
       buttonSubmit.classList.add("disabled-button");
       input.addEventListener("input", inputListener);
     }
+
+    // // update submit listener
+
+    // ipForm.removeEventListener(
+    //   "submit",
+    //   this.getIpLocationSubmitHandler.bind(this)
+    // );
+    // ipForm.addEventListener(
+    //   "submit",
+    //   this.getIpLocationSubmitHandler.bind(this)
+    // );
   }
 
-  updateMap(lat: number, lng: number) {
-    if (this.ipMap) {
+  updateMap() {
+    if (this.ipMap && this.locationData) {
+      const [lat, lng] = [
+        this.locationData.location.lat,
+        this.locationData.location.lng,
+      ];
       this.ipMap.setView([lat + MARKER_OFFSET, lng], 13);
       L.marker([lat, lng], { icon: IconMarker }).addTo(this.ipMap);
+    }
+  }
+
+  updatePanel() {
+    const dataPanelElement = document.querySelector(
+      ".data-panel"
+    ) as HTMLDivElement;
+
+    if (this.locationData) {
+      const newDataPanelList = dataPanelList(this.locationData);
+      dataPanelElement.innerHTML = newDataPanelList;
     }
   }
 }
