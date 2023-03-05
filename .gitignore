@@ -26,3 +26,4 @@ dist-ssr
 
 #my
 .env.client
+.env
