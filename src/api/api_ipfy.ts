@@ -1,8 +1,9 @@
 import { validateIp } from "../utils/validation";
 import isValidDomain from "is-valid-domain";
+let ipfyKey = import.meta.env.VITE_APIFY_KEY;
 
 const baseUrl = "https://geo.ipify.org/api/v2/country,city";
-const APFY_KEY = "at_7J6VMVmKqDqjfaqYmHRVitGnstP2W";
+console.log(ipfyKey);
 
 export type BadResponse = {
   code: number;
@@ -10,7 +11,7 @@ export type BadResponse = {
 };
 
 export async function getIpLocationData<T>(value?: string) {
-  let query = `apiKey=${APFY_KEY}`;
+  let query = `apiKey=${ipfyKey}`;
   let ipOrDomain = value ? value : null;
   if (ipOrDomain && validateIp(ipOrDomain)) {
     query = `${query}&ipAddress=${ipOrDomain}`;
@@ -18,16 +19,17 @@ export async function getIpLocationData<T>(value?: string) {
     query = `${query}&domain=${ipOrDomain}`;
   }
   const url = `${baseUrl}?${query}`;
-  console.log(url);
-  const response = await fetch(url, { method: "GET" });
-  console.log(response);
-  if (response.ok) {
-    return await (<T>response.json());
-  } else {
-    const badResponse: BadResponse = await response.json();
-    console.log(badResponse);
-    throw new Error(badResponse.messages);
+  try {
+    console.log("FETCH");
+    const response = await fetch(url, { method: "GET" });
+    if (response.ok) {
+      return await (<T>response.json());
+    } else {
+      const badResponse: BadResponse = await response.json();
+      throw new Error(badResponse.messages);
+    }
+  } catch (err) {
+    console.log(err);
+    throw err;
   }
 }
-
-//https://geo.ipify.org/api/v2/country,city?apiKey=at_7J6VMVmKqDqjfaqYmHRVitGnstP2W&ipAddress=8.8.8.8

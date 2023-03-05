@@ -12,14 +12,12 @@ var IconMarker = L.icon({
   iconSize: [38, 50],
   iconAnchor: [22, 94],
   popupAnchor: [-3, -76],
-  // shadowUrl: 'my-icon-shadow.png',
   shadowSize: [68, 95],
   shadowAnchor: [22, 94],
 });
 
 const MARKER_OFFSET = 0.015;
 
-// 192.212.174.101
 const DEFAULT_DATA: LocationData = {
   ip: "192.212.174.101",
   isp: "Southern California Edison ",
@@ -42,8 +40,6 @@ export class IpLocationApp {
     // getIpLocationData<LocationData>()
     //   .then((locationData) => {
     //     this.configureUI(locationData);
-    //     document.querySelector(".ip-location-header")!.innerHTML +=
-    //       dataPanel(locationData);
     //     this.ipMap = this.renderMap(
     //       locationData.location.lat,
     //       locationData.location.lng
@@ -110,7 +106,6 @@ export class IpLocationApp {
   }
 
   async getIpLocationSubmitHandler(e: Event) {
-    console.log("SUBMIT");
     e.preventDefault();
 
     const ipForm = document.querySelector(".location-form") as HTMLFormElement;
@@ -120,7 +115,6 @@ export class IpLocationApp {
     // listener for case of incorrect inputs
     const inputListener = (e: Event) => {
       enteredValue = (e.target as HTMLInputElement).value;
-      console.log("inputListener", enteredValue);
       if (
         validateIp(enteredValue) ||
         isValidDomain(enteredValue) ||
@@ -140,14 +134,11 @@ export class IpLocationApp {
       isValidDomain(enteredValue) ||
       enteredValue === ""
     ) {
-      console.log("VALID", enteredValue);
       try {
         this.locationData = await getIpLocationData<LocationData>(enteredValue);
-        console.log(this.locationData, this);
         this.updatePanel();
         this.updateMap();
       } catch (err: any) {
-        console.log("catch", err);
         const dataPanel = document.querySelector(
           ".data-panel"
         ) as HTMLDivElement;
@@ -160,23 +151,11 @@ export class IpLocationApp {
         dataPanel.innerHTML = `<h3>No data for such IP/domain</h3> <p><i>${message}</i></p>`;
       }
     } else {
-      console.log("INVALID", enteredValue);
       input.style.borderColor = "salmon";
       buttonSubmit.disabled = true;
       buttonSubmit.classList.add("disabled-button");
       input.addEventListener("input", inputListener);
     }
-
-    // // update submit listener
-
-    // ipForm.removeEventListener(
-    //   "submit",
-    //   this.getIpLocationSubmitHandler.bind(this)
-    // );
-    // ipForm.addEventListener(
-    //   "submit",
-    //   this.getIpLocationSubmitHandler.bind(this)
-    // );
   }
 
   updateMap() {
