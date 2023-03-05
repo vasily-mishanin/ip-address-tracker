@@ -1,6 +1,6 @@
 import { validateIp } from "../utils/validation";
 import isValidDomain from "is-valid-domain";
-let ipfyKey = import.meta.env.VITE_APIFY_KEY || process.env.VITE_APIFY_KEY;
+let ipfyKey = import.meta.env.VITE_APIFY_KEY;
 
 const baseUrl = "https://geo.ipify.org/api/v2/country,city";
 console.log(ipfyKey);
