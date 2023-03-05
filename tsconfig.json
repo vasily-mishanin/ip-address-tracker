@@ -14,9 +14,9 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
-    "types": ["leaflet"]
+    "types": ["leaflet", "node"]
   },
-  "include": ["src", "types"],
+  "include": ["src", "types", "vite.config.js"],
   "externals": {
     "leaflet": "L"
   }
