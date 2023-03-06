@@ -3,7 +3,6 @@ import isValidDomain from "is-valid-domain";
 let ipfyKey = import.meta.env.VITE_APIFY_KEY;
 
 const baseUrl = "https://geo.ipify.org/api/v2/country,city";
-console.log(ipfyKey);
 
 export type BadResponse = {
   code: number;
